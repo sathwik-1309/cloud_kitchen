@@ -13,6 +13,7 @@ class InventoryItemsController < ApplicationController
   def create
     inventory_item = InventoryItem.new(inventory_item_params)
     if inventory_item.save
+      Inventory::InventoryCheckWorker.perform_async(inventory_item.id)
       render json: inventory_item, status: :created
     else
       render json: { errors: inventory_item.errors.full_messages }, status: :unprocessable_entity
@@ -21,6 +22,7 @@ class InventoryItemsController < ApplicationController
 
   def update
     if @inventory_item.update(inventory_item_params)
+      Inventory::InventoryCheckWorker.perform_async(@inventory_item.id)
       render json: @inventory_item
     else
       render json: { errors: @inventory_item.errors.full_messages }, status: :unprocessable_entity

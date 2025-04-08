@@ -45,6 +45,7 @@ module CloudKitchen
     config.autoload_paths << Rails.root.join('app/middleware')
 
     config.middleware.use ErrorHandlingMiddleware
+    config.active_job.queue_adapter = :sidekiq
 
   end
 end

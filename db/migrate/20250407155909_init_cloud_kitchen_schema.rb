@@ -11,7 +11,7 @@ class InitCloudKitchenSchema < ActiveRecord::Migration[7.1]
       t.string :name, null: false
       t.integer :quantity, null: false, default: 0
       t.integer :low_stock_threshold, null: false, default: 0
-      t.integer :lock_version, null: false, default: 0
+      t.boolean :low_stock_alert_sent, null: false, default: false
       t.timestamps
     end
 

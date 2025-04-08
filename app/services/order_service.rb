@@ -4,11 +4,12 @@ class OrderService
     ActiveRecord::Base.transaction do
       order = Order.create!(customer_id: customer_id, status: Order::Status::PLACED)
       order_items = []
+      inventory_items_to_check = []
   
       items.each do |item|
         inventory_item_id = item[:inventory_item_id]
         quantity = item[:quantity].to_i
-
+  
         unless InventoryItem.exists?(id: inventory_item_id)
           raise "Invalid inventory item ID: #{inventory_item_id}"
         end
@@ -19,7 +20,7 @@ class OrderService
                          .update_all("quantity = quantity - #{quantity}")
   
         if updated_rows == 0
-          raise "Order could not be placed. inventory item #{inventory_item_id} is out of stock."
+          raise "Order could not be placed. Inventory item #{inventory_item_id} is out of stock."
         end
   
         order_item = OrderItem.create!(
@@ -28,7 +29,17 @@ class OrderService
           quantity: quantity
         )
         order_items << order_item
+        inventory_items_to_check << inventory_item_id
       end
+  
+      # After all goes well, enqueue jobs
+      inventory_items_to_check.each do |inventory_item_id|
+        inventory_item = InventoryItem.find(inventory_item_id)
+        Inventory::InventoryCheckWorker.perform_async(inventory_item.id)
+      end
+      
+      Mailer::CustomerMailerWorker.perform_async(order.id, order.customer_id, order.status)
+      Logs::UpdateAnalysisWorker.perform_async(order.id, order.status, order.created_at.to_s)
   
       return {
         success: true,
@@ -66,6 +77,8 @@ class OrderService
 
       order.update!(status: :cancelled)
     end
+    Mailer::CustomerMailerWorker.perform_async(order.id, order.customer_id, Order::Status::CANCELLED)
+    Logs::UpdateAnalysisWorker.perform_async(order.id, Order::Status::CANCELLED, order.updated_at.to_s)
 
     true
   rescue
@@ -74,10 +87,12 @@ class OrderService
 
   def self.update_order_status(order, new_status)
     if Order::Status.constants.map(&:to_s).map(&:downcase).include?(new_status)
-      order.update(status: Order::Status.const_get(new_status))
-      order.as_json
+      order.update(status: new_status)
+      Mailer::CustomerMailerWorker.perform_async(order.id, order.customer_id, new_status)
+      Logs::UpdateAnalysisWorker.perform_async(order.id, new_status, order.updated_at.to_s)
+      order
     else
-      raise ValidationError.new("Invalid status: #{new_status}")
+      raise ValidationError.new(message: "Invalid status: #{new_status}")
     end
   end
 

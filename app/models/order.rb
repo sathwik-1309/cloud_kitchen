@@ -31,6 +31,6 @@ class Order < ApplicationRecord
   validates :status, presence: true, inclusion: { in: Status::ALL }
 
   def get_hash
-    Order.includes(:order_items).find_by(id: self.id)
+    Order.includes(:order_items).find_by(id: self.id)&.as_json(include: :order_items)
   end
 end

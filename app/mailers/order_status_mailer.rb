@@ -1,15 +1,15 @@
 class OrderStatusMailer < ApplicationMailer
   default from: ENV['NOTIFICATION_EMAIL_ID']
 
-  def status_update(order, customer)
+  def status_update_mail(order, customer, status)
     @order = order
-    @status_message = status_message_for(@order.status)
+    @status_message = status_message_for(status)
     @customer = customer
 
     mail(
       to: customer.email,
-      from: "Cloud Kitchen <#{ENV['NOTIFICATION_EMAIL_ID']}>",
-      subject: "Your Order ##{@order.id} - #{@order.status.titleize}"
+      from: "Cloud Kitchen Order Notifications",
+      subject: "Your Order ##{@order.id} - #{status.titleize}"
     )
   end
 

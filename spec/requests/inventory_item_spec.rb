@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "InventoryItems API", type: :request do
+  include ActiveJob::TestHelper
   let!(:inventory_items) { create_list(:inventory_item, 5) }
   let(:inventory_item_id) { inventory_items.first.id }
 
@@ -34,15 +35,34 @@ RSpec.describe "InventoryItems API", type: :request do
 
   describe "POST /inventory_items" do
     let(:valid_attributes) { { inventory_item: { name: "Salt", quantity: 20, low_stock_threshold: 5 } } }
+    let(:low_stock_attributes) do
+      { inventory_item: { name: "Pepper", quantity: 4, low_stock_threshold: 5 } } # quantity <= threshold
+    end
 
     context "when request is valid" do
+      before do
+        allow(Inventory::InventoryCheckWorker).to receive(:perform_async)
+      end
+
       it "creates an inventory item" do
         expect {
           post "/inventory_items", params: valid_attributes
         }.to change(InventoryItem, :count).by(1)
-
+  
         expect(response).to have_http_status(:created)
         expect(JSON.parse(response.body)['name']).to eq("Salt")
+      end
+
+      it "enqueues the inventory check job" do
+        post "/inventory_items", params: valid_attributes
+        inventory_item = InventoryItem.last
+        expect(Inventory::InventoryCheckWorker).to have_received(:perform_async).with(inventory_item.id)
+      end
+
+      it "enqueues the inventory check job for low threshold value" do
+        post "/inventory_items", params: low_stock_attributes
+        inventory_item = InventoryItem.last
+        expect(Inventory::InventoryCheckWorker).to have_received(:perform_async).with(inventory_item.id)
       end
     end
 
@@ -57,6 +77,9 @@ RSpec.describe "InventoryItems API", type: :request do
   end
 
   describe "PUT /inventory_items/:id" do
+    let!(:inventory_item) { InventoryItem.create!(name: "Rice", quantity: 20, low_stock_threshold: 10) }
+    let(:inventory_item_id) { inventory_item.id }
+
     let(:valid_update) { { inventory_item: { quantity: 55 } } }
 
     context "when the inventory item exists" do
@@ -66,6 +89,7 @@ RSpec.describe "InventoryItems API", type: :request do
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['quantity']).to eq(55)
       end
+
     end
 
     context "when the inventory item does not exist" do

@@ -4,10 +4,13 @@ class OrdersController < ApplicationController
   def create
     customer_id = order_params[:customer_id]
     items = order_params[:items]
-  
-    if customer_id.blank? || !items.is_a?(Array) || items.empty?
-      render json: { error: "customer_id and items are required" }, status: :bad_request
-      return
+
+    if customer_id.blank? || Customer.exists?(id: customer_id) == false
+      return render json: { error: "customer_id is invalid or nil" }, status: :bad_request
+    end
+
+    if !items.is_a?(Array) || items.empty?
+      return render json: { error: "items are invalid or empty" }, status: :bad_request
     end
   
     result = OrderService.create_order(customer_id, items)
@@ -23,8 +26,8 @@ class OrdersController < ApplicationController
     offset = params[:offset] || 0
     limit = params[:limit] || 10
 
-    if customer_id.blank?
-      return render json: { error: 'Customer ID is required' }, status: :bad_request
+    if customer_id.blank? || !Customer.exists?(id: customer_id)
+      return render json: { error: 'Customer ID is invalid or nil' }, status: :bad_request
     end
 
     orders = OrderService.list_orders(customer_id, offset, limit)
@@ -41,11 +44,15 @@ class OrdersController < ApplicationController
     unless new_status.present?
       return render json: { error: 'Status is required' }, status: :bad_request
     end
+
+    if new_status == @order.status
+      return render json: { error: 'Status is the same as current status' }, status: :unprocessable_entity
+    end
   
     updated_order = OrderService.update_order_status(@order, new_status)
   
     if updated_order
-      render json: updated_order, status: :ok
+      render json: updated_order.get_hash, status: :ok
     else
       render json: { error: 'Unable to update order' }, status: :unprocessable_entity
     end

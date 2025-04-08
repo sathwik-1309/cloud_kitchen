@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Customers API', type: :request do
+  include ActiveJob::TestHelper
   let!(:customers) { create_list(:customer, 5) }
   let(:customer_id) { customers.first.id }
 
@@ -32,10 +33,20 @@ RSpec.describe 'Customers API', type: :request do
 
   describe 'POST /customers' do
     context 'when valid' do
-      it 'creates a customer' do
-        post '/customers', params: { customer: { name: 'Jane', email: 'jane@gmail.com' } }
+      before do
+        allow(Mailer::WelcomeMailerWorker).to receive(:perform_async)
+      end
+    
+      it 'creates a customer and enqueues the mailer worker' do
+        expect {
+          post '/customers', params: { customer: { name: 'Jane', email: 'jane@gmail.com' } }
+        }.to change(Customer, :count).by(1)
+    
         expect(response).to have_http_status(201)
-        expect(JSON.parse(response.body)['name']).to eq('Jane')
+    
+        customer = Customer.last
+    
+        expect(Mailer::WelcomeMailerWorker).to have_received(:perform_async).with(customer.id)
       end
     end
 
