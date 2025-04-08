@@ -55,14 +55,8 @@ class OrderService
     Order.includes(:order_items).where(customer_id: customer_id).order(created_at: :desc).offset(offset).limit(limit)
   end
 
-  def self.find_order(order_id)
-    Order.includes(:order_items).find_by(id: order_id)
-  end
-
-  def self.cancel_order(order_id)
-    order = Order.find_by(id: order_id)
-
-    return false if order.nil? || order.status != 'placed'
+  def self.cancel_order(order)
+    return false if order.status != 'placed'
 
     Order.transaction do
       order.order_items.each do |item|
@@ -76,6 +70,15 @@ class OrderService
     true
   rescue
     false
+  end
+
+  def self.update_order_status(order, new_status)
+    if Order::Status.constants.map(&:to_s).map(&:downcase).include?(new_status)
+      order.update(status: Order::Status.const_get(new_status))
+      order.as_json
+    else
+      raise ValidationError.new("Invalid status: #{new_status}")
+    end
   end
 
 end

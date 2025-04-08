@@ -283,29 +283,51 @@ RSpec.describe "Orders API", type: :request do
 
   describe 'DELETE #destroy' do
     let(:customer) { create(:customer) }
+    let!(:inventory_item) { InventoryItem.create!(name: "Marker", quantity: 5) }
     let!(:order) { Order.create!(customer_id: customer.id, status: Order::Status::PLACED) }
-
-    context 'when cancel succeeds' do
-      before do
-        allow(OrderService).to receive(:cancel_order).with(order.id.to_s).and_return(true)
-      end
-
-      it 'returns 200 OK with success message' do
+    let!(:order_item) { OrderItem.create!(order_id: order.id, inventory_item_id: inventory_item.id, quantity: 2) }
+  
+    context 'when cancel succeeds and inventory is restored' do
+      it 'restores inventory count and deletes order' do
+        original_quantity = inventory_item.quantity
+  
         delete "/orders/#{order.id}"
+  
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['message']).to eq('Order cancelled successfully')
+  
+        # Inventory should be restored
+        expect(inventory_item.reload.quantity).to eq(original_quantity + order_item.quantity)
+        expect(order.reload.status).to eq(Order::Status::CANCELLED)
       end
     end
-
-    context 'when cancel fails' do
-      before do
-        allow(OrderService).to receive(:cancel_order).with(order.id.to_s).and_return(false)
+  
+    context 'when order does not exist' do
+      it 'returns 404 not found' do
+        delete "/orders/999999"
+  
+        expect(response).to have_http_status(:not_found)
+        expect(JSON.parse(response.body)['error']).to eq('Order not found')
       end
-
-      it 'returns 422 Unprocessable Entity with error message' do
+    end
+  
+    context 'when cancellation fails internally' do
+      before do
+        # Simulate failure by stubbing the service
+        allow(OrderService).to receive(:cancel_order).and_return(false)
+      end
+  
+      it 'returns 422 Unprocessable Entity and does not change inventory' do
+        original_quantity = inventory_item.quantity
+  
         delete "/orders/#{order.id}"
+  
         expect(response).to have_http_status(:unprocessable_entity)
         expect(JSON.parse(response.body)['error']).to eq('Unable to cancel order')
+  
+        expect(inventory_item.reload.quantity).to eq(original_quantity)
+  
+        expect(order.status).not_to eq(Order::Status::CANCELLED)
       end
     end
   end

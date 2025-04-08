@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fafafa;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 30px;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .header {
+        text-align: center;
+        color: #444;
+      }
+
+      .content {
+        margin-top: 20px;
+        line-height: 1.6;
+      }
+
+      .footer {
+        margin-top: 30px;
+        font-size: 13px;
+        text-align: center;
+        color: #aaa;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Welcome to Cloud Kitchen, <%= @customer.name %>!</h2>
+      </div>
+
+      <div class="content">
+        <p>We're thrilled to have you with us 🎉</p>
+
+        <p>
+          Whether you're here to grab a quick bite or planning a feast,
+          we've got you covered with delicious meals, fast delivery, and a
+          seamless ordering experience.
+        </p>
+
+        <p>
+          If you ever need help, our support team is just a message away.
+        </p>
+
+        <p>
+          Happy eating! 🍽️<br>
+          — The Cloud Kitchen Team
+        </p>
+      </div>
+
+      <div class="footer">
+        You received this email because you signed up on Cloud Kitchen.<br />
+        If you did not create an account, please ignore this message.
+      </div>
+    </div>
+  </body>
+</html>

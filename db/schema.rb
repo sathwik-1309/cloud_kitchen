@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_07_155909) do
     t.string "name", null: false
     t.integer "quantity", default: 0, null: false
     t.integer "low_stock_threshold", default: 0, null: false
+    t.integer "lock_version", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -43,7 +44,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_07_155909) do
   create_table "order_status_logs", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.string "status", null: false
-    t.datetime "changed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_order_status_logs_on_order_id"

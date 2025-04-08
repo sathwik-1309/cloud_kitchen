@@ -1,4 +1,5 @@
 class OrdersController < ApplicationController
+  before_action :set_order, only: [:show, :update, :destroy]
 
   def create
     customer_id = order_params[:customer_id]
@@ -31,16 +32,27 @@ class OrdersController < ApplicationController
   end
 
   def show
-    order = OrderService.find_order(params[:id])
-    if order
-      render json: order, status: :ok
+    render json: @order.get_hash, status: :ok
+  end
+
+  def update
+    new_status = params[:status]
+  
+    unless new_status.present?
+      return render json: { error: 'Status is required' }, status: :bad_request
+    end
+  
+    updated_order = OrderService.update_order_status(@order, new_status)
+  
+    if updated_order
+      render json: updated_order, status: :ok
     else
-      render json: { error: 'Order not found' }, status: :not_found
+      render json: { error: 'Unable to update order' }, status: :unprocessable_entity
     end
   end
 
   def destroy
-    success = OrderService.cancel_order(params[:id])
+    success = OrderService.cancel_order(@order)
     if success
       render json: { message: 'Order cancelled successfully' }, status: :ok
     else
@@ -49,6 +61,13 @@ class OrdersController < ApplicationController
   end
 
   private
+
+  def set_order
+    @order = Order.find_by(id: params[:id])
+    unless @order
+      render json: { error: 'Order not found' }, status: :not_found
+    end
+  end
 
   def order_params
     params.require(:order).permit(:customer_id, items: [:inventory_item_id, :quantity])

@@ -14,6 +14,7 @@ class CustomersController < ApplicationController
   def create
     customer = Customer.new(customer_params)
     if customer.save
+      WelcomeMailJob.perform_later(customer)
       render json: customer, status: :created
     else
       render json: { errors: customer.errors.full_messages }, status: :unprocessable_entity

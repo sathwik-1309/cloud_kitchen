@@ -29,4 +29,8 @@ class Order < ApplicationRecord
 
   validates :customer, presence: true
   validates :status, presence: true, inclusion: { in: Status::ALL }
+
+  def get_hash
+    Order.includes(:order_items).find_by(id: self.id)
+  end
 end

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .status {
+        font-size: 18px;
+        font-weight: bold;
+        color: #2d6cdf;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Hello <%= @customer.name %>,</h2>
+
+    <p><%= @status_message %></p>
+
+    <p class="status">Order ID: <%= @order.id %></p>
+
+    <p>We’ll notify you again with further updates.</p>
+
+    <p>Thanks for ordering with Cloud Kitchen!<br>
+    Have a great day ✨</p>
+  </body>
+</html>

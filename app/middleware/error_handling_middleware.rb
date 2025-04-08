@@ -13,6 +13,13 @@ class ErrorHandlingMiddleware
         { 'Content-Type' => 'application/json' },
         [{ error: e&.message }.to_json]
       ]
+    rescue ValidationError => e
+      Rails.logger.error "[Validation Error] #{e.message}"
+      [
+        422,
+        { 'Content-Type' => 'application/json' },
+        [{ error: e&.message }.to_json]
+      ]
     rescue StandardError => e
       Rails.logger.error "[Internal Server Error] #{e.class} - #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
