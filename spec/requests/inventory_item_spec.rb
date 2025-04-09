@@ -102,22 +102,22 @@ RSpec.describe "InventoryItems API", type: :request do
     end
   end
 
-  describe "DELETE /inventory_items/:id" do
-    it "deletes the inventory item" do
-      expect {
-        delete "/inventory_items/#{inventory_item_id}"
-      }.to change(InventoryItem, :count).by(-1)
+  # describe "DELETE /inventory_items/:id" do
+  #   it "deletes the inventory item" do
+  #     expect {
+  #       delete "/inventory_items/#{inventory_item_id}"
+  #     }.to change(InventoryItem, :count).by(-1)
 
-      expect(response).to have_http_status(:no_content)
-    end
+  #     expect(response).to have_http_status(:no_content)
+  #   end
 
-    it "returns not found when item doesn't exist" do
-      delete "/inventory_items/999999"
+  #   it "returns not found when item doesn't exist" do
+  #     delete "/inventory_items/999999"
 
-      expect(response).to have_http_status(:not_found)
-      expect(JSON.parse(response.body)['error']).to eq("Inventory item not found")
-    end
-  end
+  #     expect(response).to have_http_status(:not_found)
+  #     expect(JSON.parse(response.body)['error']).to eq("Inventory item not found")
+  #   end
+  # end
 
   describe "Error handling middleware" do
     it "returns 500 for unexpected errors without backtrace" do

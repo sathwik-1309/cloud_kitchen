@@ -3,6 +3,8 @@ class InventoryItem < ApplicationRecord
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :low_stock_threshold, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  has_many :order_items
+
   def check_and_notify_low_stock
     if quantity <= low_stock_threshold && !low_stock_alert_sent
       AdminMailer.low_inventory_alert(self).deliver_now

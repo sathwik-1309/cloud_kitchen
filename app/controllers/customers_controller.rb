@@ -1,6 +1,6 @@
 # app/controllers/customers_controller.rb
 class CustomersController < ApplicationController
-  before_action :set_customer, only: [:show, :update, :destroy]
+  before_action :set_customer, only: [:show, :update]
 
   def index
     customers = Customer.all
@@ -29,10 +29,10 @@ class CustomersController < ApplicationController
     end
   end
 
-  def destroy
-    @customer.destroy
-    head :no_content
-  end
+  # def destroy
+  #   @customer.destroy
+  #   head :no_content
+  # end
 
   private
 

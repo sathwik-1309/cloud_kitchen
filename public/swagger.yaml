@@ -72,17 +72,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
-    delete:
-      summary: Delete a customer
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Deleted
+    # delete:
+    #   summary: Delete a customer
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       required: true
+    #       schema:
+    #         type: integer
+    #   responses:
+    #     '204':
+    #       description: Deleted
 
   /inventory_items:
     get:
@@ -147,17 +147,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InventoryItem'
-    delete:
-      summary: Delete inventory item
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Deleted
+    # delete:
+    #   summary: Delete inventory item
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       required: true
+    #       schema:
+    #         type: integer
+    #   responses:
+    #     '204':
+    #       description: Deleted
 
   /orders:
     get:

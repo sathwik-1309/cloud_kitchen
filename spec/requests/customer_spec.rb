@@ -75,15 +75,15 @@ RSpec.describe 'Customers API', type: :request do
     end
   end
 
-  describe 'DELETE /customers/:id' do
-    it 'deletes the customer' do
-      expect {
-        delete "/customers/#{customer_id}"
-      }.to change(Customer, :count).by(-1)
+  # describe 'DELETE /customers/:id' do
+  #   it 'deletes the customer' do
+  #     expect {
+  #       delete "/customers/#{customer_id}"
+  #     }.to change(Customer, :count).by(-1)
 
-      expect(response).to have_http_status(204)
-    end
-  end
+  #     expect(response).to have_http_status(204)
+  #   end
+  # end
 
   describe 'Middleware Error Rescue' do
     before do

@@ -1,5 +1,5 @@
 class InventoryItemsController < ApplicationController
-  before_action :set_inventory_item, only: [:show, :update, :destroy]
+  before_action :set_inventory_item, only: [:show, :update]
 
   def index
     inventory_items = InventoryItem.all
@@ -29,10 +29,10 @@ class InventoryItemsController < ApplicationController
     end
   end
 
-  def destroy
-    @inventory_item.destroy
-    head :no_content
-  end
+  # def destroy
+  #   @inventory_item.destroy
+  #   head :no_content
+  # end
 
   private
 
