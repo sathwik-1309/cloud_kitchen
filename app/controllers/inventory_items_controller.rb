@@ -3,11 +3,11 @@ class InventoryItemsController < ApplicationController
 
   def index
     inventory_items = InventoryItem.all
-    render json: inventory_items
+    render json: inventory_items, status: :ok
   end
 
   def show
-    render json: @inventory_item
+    render json: @inventory_item, status: :ok
   end
 
   def create
@@ -23,7 +23,7 @@ class InventoryItemsController < ApplicationController
   def update
     if @inventory_item.update(inventory_item_params)
       Inventory::InventoryCheckWorker.perform_async(@inventory_item.id)
-      render json: @inventory_item
+      render json: @inventory_item, status: :accepted
     else
       render json: { errors: @inventory_item.errors.full_messages }, status: :unprocessable_entity
     end

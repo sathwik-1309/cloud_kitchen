@@ -86,7 +86,7 @@ RSpec.describe "InventoryItems API", type: :request do
       it "updates the item" do
         put "/inventory_items/#{inventory_item_id}", params: valid_update
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:accepted)
         expect(JSON.parse(response.body)['quantity']).to eq(55)
       end
 

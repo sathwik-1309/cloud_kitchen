@@ -406,7 +406,7 @@ RSpec.describe "Orders API", type: :request do
       it 'returns updated order and enqueues background jobs' do
         put url, params: { status: 'preparing' }
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:accepted)
         parsed = JSON.parse(response.body)
         expect(parsed['status']).to eq('preparing')
 

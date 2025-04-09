@@ -4,11 +4,11 @@ class CustomersController < ApplicationController
 
   def index
     customers = Customer.all
-    render json: customers
+    render json: customers, status: :ok
   end
 
   def show
-    render json: @customer
+    render json: @customer, status: :ok
   end
 
   def create
@@ -23,7 +23,7 @@ class CustomersController < ApplicationController
 
   def update
     if @customer.update(customer_params)
-      render json: @customer
+      render json: @customer, status: :accepted
     else
       render json: { errors: @customer.errors.full_messages }, status: :unprocessable_entity
     end

@@ -52,7 +52,7 @@ class OrdersController < ApplicationController
     updated_order = OrderService.update_order_status(@order, new_status)
   
     if updated_order
-      render json: updated_order.get_hash, status: :ok
+      render json: updated_order.get_hash, status: :accepted
     else
       render json: { error: 'Unable to update order' }, status: :unprocessable_entity
     end

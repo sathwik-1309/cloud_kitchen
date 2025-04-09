@@ -70,7 +70,7 @@ RSpec.describe 'Customers API', type: :request do
   describe 'PUT /customers/:id' do
     it 'updates the customer' do
       put "/customers/#{customer_id}", params: { customer: { name: 'Updated Name' } }
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(202)
       expect(JSON.parse(response.body)['name']).to eq('Updated Name')
     end
   end
