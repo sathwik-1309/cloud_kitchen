@@ -218,7 +218,7 @@ paths:
               properties:
                 status:
                   type: string
-                  enum: [placed, preparing, out_for_delivery, delivered, cancelled]
+                  enum: [placed, preparing, shipped, delivered, cancelled]
       responses:
         '202':
           description: Updated order
@@ -260,12 +260,16 @@ components:
 
     CustomerInput:
       type: object
-      required: [name, email]
+      required: [customer]
       properties:
-        name:
-          type: string
-        email:
-          type: string
+        customer:
+          type: object
+          required: [name, email]
+          properties:
+            name:
+              type: string
+            email:
+              type: string
           
     InventoryItemList:
       type: array
@@ -292,16 +296,19 @@ components:
 
     InventoryItemInput:
       type: object
-      required: [name, quantity]
+      required: [inventory_item]
       properties:
-        name:
-          type: string
-        quantity:
-          type: integer
-        low_stock_threshold:
-          type: integer
-        low_stock_alert_sent:
-          type: boolean
+        inventory_item:
+          required: [name, quantity]
+          properties:
+            name:
+              type: string
+            quantity:
+              type: integer
+            low_stock_threshold:
+              type: integer
+            low_stock_alert_sent:
+              type: boolean
           
     OrderList:
       type: array
@@ -337,14 +344,26 @@ components:
           type: string
         updated_at:
           type: string
+          
+    OrderItemInput:
+      type: object
+      properties:
+        inventory_item_id:
+          type: integer
+        quantity:
+          type: integer
 
     OrderInput:
       type: object
-      required: [customer_id, items]
+      required: [inventory_item]
       properties:
-        customer_id:
-          type: integer
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItem'
+        order:
+          required: [customer_id, items]
+          properties:
+            customer_id:
+              type: integer
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderItemInput'
+            

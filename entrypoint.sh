@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-# Wait for DB to be ready
+# Wait for DB
 echo "🔄 Waiting for PostgreSQL..."
-until pg_isready -h db -p 5432 -U postgres > /dev/null 2>&1; do
+until pg_isready -h "$DB_HOST" -p 5432 -U "$POSTGRES_USER" > /dev/null 2>&1; do
   sleep 1
 done
 
 echo "✅ PostgreSQL is up. Running setup..."
 
-# DB setup
-bundle exec rails db:create db:migrate
+# Setup DB
+bundle exec rails db:prepare
 
 # Start server
 echo "🚀 Starting Rails app..."

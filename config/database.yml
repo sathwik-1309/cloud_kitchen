@@ -3,8 +3,8 @@ default: &default
   encoding: unicode
   port: 5432
   host: <%= ENV['DB_HOST'] || 'localhost'%>
-  username: <%= ENV['POSTGRES_USER'] || 'finanza' %>
-  password: <%= ENV['POSTGRES_PASSWORD'] || 'mypassword' %>
+  username: <%= ENV['POSTGRES_USER'] || 'postgres_user' %>
+  password: <%= ENV['POSTGRES_PASSWORD'] || 'postgres_password' %>
   database: <%= ENV['POSTGRES_DB'] || 'cloud_kitchen_dev'%>
 
 development:
@@ -15,4 +15,5 @@ test:
   database: cloud_kitchen_test
 
 production:
+  database: <%= ENV['POSTGRES_DB'] || 'cloud_kitchen_prod' %>
   <<: *default

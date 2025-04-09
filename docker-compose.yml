@@ -1,12 +1,12 @@
-version: '3.9'
+version: '3.8'
 
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_db
     ports:
       - "5432:5432"
     volumes:
@@ -18,33 +18,45 @@ services:
       - "6379:6379"
 
   web:
-    build: .
-    volumes:
-      - .:/app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0 -p 3000"
     ports:
       - "3000:3000"
     depends_on:
       - db
       - redis
-    env_file: .env
     environment:
-      RAILS_ENV: production
-      DATABASE_URL: postgres://postgres:password@db:5432/postgres
-      REDIS_URL: redis://redis:6379/0
+      DB_HOST: db
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_db
+      SECRET_KEY_BASE: d79ce2208a631df26f31ef36b5302f1dfe072627cf61ba37bebd3569d9d2f3baed97ab1297d653356d77f97d38e9eb1d84271201566deaf73c51de81ab910f78
+      REDIS_URL: redis://redis:6379/2
+      NOTIFICATION_EMAIL_ID: cloudkitchensathwik@gmail.com
+      NOTIFICATION_EMAIL_PASSWORD: ztfr pivd trhi sojn
+      ADMIN_EMAIL_ID: sathwik1309@gmail.com
 
   sidekiq:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: bundle exec sidekiq
-    volumes:
-      - .:/app
     depends_on:
       - db
       - redis
-    env_file: .env
+      - web
     environment:
-      RAILS_ENV: production
-      DATABASE_URL: postgres://postgres:password@db:5432/postgres
-      REDIS_URL: redis://redis:6379/0
+      DB_HOST: db
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_db
+      SECRET_KEY_BASE: d79ce2208a631df26f31ef36b5302f1dfe072627cf61ba37bebd3569d9d2f3baed97ab1297d653356d77f97d38e9eb1d84271201566deaf73c51de81ab910f78
+      REDIS_URL: redis://redis:6379/2
+      NOTIFICATION_EMAIL_ID: cloudkitchensathwik@gmail.com
+      NOTIFICATION_EMAIL_PASSWORD: ztfr pivd trhi sojn
+      ADMIN_EMAIL_ID: sathwik1309@gmail.com
 
 volumes:
   postgres_data:

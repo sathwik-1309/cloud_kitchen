@@ -73,6 +73,7 @@ class OrderService
       order.order_items.each do |item|
         InventoryItem.where(id: item.inventory_item_id)
                      .update_all("quantity = quantity + #{item.quantity}")
+        Inventory::InventoryCheckWorker.perform_async(item.inventory_item_id)
       end
 
       order.update!(status: :cancelled)

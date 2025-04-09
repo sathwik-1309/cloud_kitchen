@@ -91,9 +91,6 @@ GEM
     connection_pool (2.5.0)
     crass (1.0.6)
     date (3.4.1)
-    debug (1.10.0)
-      irb (~> 1.10)
-      reline (>= 0.3.8)
     diff-lcs (1.6.1)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
@@ -145,10 +142,6 @@ GEM
     nio4r (2.7.4)
     nokogiri (1.15.7)
       mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
-    nokogiri (1.15.7-aarch64-linux)
-      racc (~> 1.4)
-    nokogiri (1.15.7-x86_64-linux)
       racc (~> 1.4)
     pg (1.5.9)
     pp (0.6.2)
@@ -207,6 +200,10 @@ GEM
       connection_pool
     reline (0.6.1)
       io-console (~> 0.5)
+    rspec (3.13.0)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
     rspec-core (3.13.3)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
@@ -258,20 +255,18 @@ GEM
     zeitwerk (2.6.18)
 
 PLATFORMS
-  aarch64-linux
   ruby
-  x86_64-linux
 
 DEPENDENCIES
   bootsnap
   byebug
-  debug
   dotenv-rails
   factory_bot_rails
   pg (~> 1.1)
   puma (>= 5.0)
   rails (~> 7.1.5, >= 7.1.5.1)
   redis
+  rspec
   rspec-rails
   rswag
   sidekiq
